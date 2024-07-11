@@ -1,5 +1,6 @@
 <?php
 namespace twp;
+use Psr\Log\LoggerInterface;
 /**
  * Plugin Name: TEST WP PLUGIN
  * Plugin URI:  https://aaaaaaa.com
@@ -16,9 +17,24 @@ namespace twp;
  * @package UM User Switching
  * @version 1.0.0
  */
+require '../../../vendor/autoload.php';
+
+class Logger
+{
+    private $logger;
+
+    public function __construct(LoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
+}
+
 add_shortcode('twp_last_posts', 'twp\get_last_posts');
 
 function get_last_posts(){
+    $logger = new Logger();
+
     $posts_count = get_option('number_of_twp_settings_posts');
     $posts_count = empty($posts_count) ? 10 : $posts_count;
     
@@ -29,11 +45,26 @@ function get_last_posts(){
         'orderby' => 'date',
         'order'   => 'DESC',
     ];
-    $posts = get_posts($args);
-    foreach ($posts as $t_post){
-        echo "<h2><a href=". get_post_permalink($t_post->ID) ."> {$t_post->post_title}</a></h2><br>";
-        echo "<p>{$t_post->post_excerpt}</p><br><br>";
+    try {
+        $posts = get_posts($args);
+        if(!empty($posts)){
+            foreach ($posts as $t_post){
+                echo "<h2><a href=". get_post_permalink($t_post->ID) ."> {$t_post->post_title}</a></h2><br>";
+                echo "<p>{$t_post->post_excerpt}</p><br><br>";
+            }
+        } else {
+            echo 'No posts';
+        }
+
+
+    } catch (\Exception $exception) {
+        $logger->critical('Get posts error', [
+            'exception' => $exception,
+        ]);
     }
+
+
+
 }
 
 add_action( 'admin_menu', 'twp\menu_settings_page', 25 );
