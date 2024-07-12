@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
  * @package UM User Switching
  * @version 1.0.0
  */
-require '../../../vendor/autoload.php';
+//require '../../../vendor/autoload.php';
 
 class Logger
 {
@@ -77,11 +77,11 @@ function menu_settings_page(){
         'TEST PLUGIN',
         'manage_options',
         'twp_settings',
-        'twp\twp_settings_page_callback'
+        'twp\settings_page_callback'
     );
 }
 
-function twp_settings_page_callback(){
+function settings_page_callback(){
     echo '<div class="wrap">
 	<h1>' . get_admin_page_title() . '</h1>
 	<form method="post" action="options.php">';
@@ -93,9 +93,9 @@ function twp_settings_page_callback(){
     echo '</form></div>';
 }
 
-add_action( 'admin_init',  'twp\twp_settings_fields' );
+add_action( 'admin_init',  'twp\settings_fields' );
 
-function twp_settings_fields(){
+function settings_fields(){
 
     // регистрируем опцию
     register_setting(
